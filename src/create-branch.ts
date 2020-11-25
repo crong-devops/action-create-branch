@@ -29,7 +29,7 @@ export async function createBranch(github: any, context: Context, branch: string
 }
 
 function githubToken(): string {
-  const token = process.env.GITHUB_TOKEN;
+  const token = process.env.UPDATE_GITHUB_TOKEN;
   if (!token)
     throw ReferenceError('No token defined in the environment variables');
   return token;
