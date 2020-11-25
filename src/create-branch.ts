@@ -9,6 +9,7 @@ export async function createBranch(github: any, context: Context, branch: string
     
     // throws HttpError if branch already exists.
     try {
+      console.log(branch);
       await toolkit.repos.getBranch({
         ...context.repo,
         branch
@@ -16,6 +17,8 @@ export async function createBranch(github: any, context: Context, branch: string
 
       branchExists = true;
     } catch(error) {
+      console.log('----error----');
+      console.log(error);
       if(error.name === 'HttpError' && error.status === 404) {
         await toolkit.git.createRef({
           ref: `refs/heads/${branch}`,
@@ -29,7 +32,7 @@ export async function createBranch(github: any, context: Context, branch: string
 }
 
 function githubToken(): string {
-  const token = process.env.UPDATE_GITHUB_TOKEN;
+  const token = process.env.GITHUB_TOKEN;
   if (!token)
     throw ReferenceError('No token defined in the environment variables');
   return token;

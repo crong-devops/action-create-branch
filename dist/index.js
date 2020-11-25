@@ -8387,10 +8387,13 @@ function createBranch(github, context, branch) {
         branch = branch.replace('refs/heads/', '');
         // throws HttpError if branch already exists.
         try {
+            console.log(branch);
             yield toolkit.repos.getBranch(Object.assign({}, context.repo, { branch }));
             branchExists = true;
         }
         catch (error) {
+            console.log('----error----');
+            console.log(error);
             if (error.name === 'HttpError' && error.status === 404) {
                 yield toolkit.git.createRef(Object.assign({ ref: `refs/heads/${branch}`, sha: context.sha }, context.repo));
             }
@@ -8402,7 +8405,7 @@ function createBranch(github, context, branch) {
 }
 exports.createBranch = createBranch;
 function githubToken() {
-    const token = process.env.UPDATE_GITHUB_TOKEN;
+    const token = process.env.GITHUB_TOKEN;
     if (!token)
         throw ReferenceError('No token defined in the environment variables');
     return token;
