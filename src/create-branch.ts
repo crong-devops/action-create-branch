@@ -1,7 +1,7 @@
 import { Context } from "@actions/github/lib/context";
 import { GitHub } from "@actions/github";
 
-export async function createBranch(github: any, context: Context, branch: string) {
+export async function createBranch(github: any, repo: string, sha: string, branch: string) {
   const toolkit : GitHub = new github(githubToken());
     let branchExists;
     // Sometimes branch might come in with refs/heads already
@@ -11,8 +11,9 @@ export async function createBranch(github: any, context: Context, branch: string
     try {
       console.log(branch);
       await toolkit.repos.getBranch({
-        ...context.repo,
-        branch
+        owner: 'actions',
+        repo: repo,
+        branch: branch
       })
 
       branchExists = true;
@@ -23,9 +24,10 @@ export async function createBranch(github: any, context: Context, branch: string
         console.log('여기까지 온것인가?(1)');
         try {
           await toolkit.git.createRef({
+            owner: 'actions',
             ref: `refs/heads/${branch}`,
-            sha: context.sha,
-            ...context.repo
+            sha: sha,
+            repo: repo
           });
         } catch (error) {
           console.log('Throw error2');

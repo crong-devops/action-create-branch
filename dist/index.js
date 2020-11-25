@@ -2976,9 +2976,11 @@ const create_branch_1 = __webpack_require__(822);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const repo = core.getInput('repo');
+            const sha = core.getInput('sha');
             const branch = core.getInput('branch');
             core.debug(`Creating branch ${branch}`);
-            yield create_branch_1.createBranch(github_1.GitHub, github_1.context, branch);
+            yield create_branch_1.createBranch(github_1.GitHub, repo, sha, branch);
         }
         catch (error) {
             core.setFailed(error.message);
@@ -8379,7 +8381,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-function createBranch(github, context, branch) {
+function createBranch(github, repo, sha, branch) {
     return __awaiter(this, void 0, void 0, function* () {
         const toolkit = new github(githubToken());
         let branchExists;
@@ -8388,7 +8390,11 @@ function createBranch(github, context, branch) {
         // throws HttpError if branch already exists.
         try {
             console.log(branch);
-            yield toolkit.repos.getBranch(Object.assign({}, context.repo, { branch }));
+            yield toolkit.repos.getBranch({
+                owner: 'actions',
+                repo: repo,
+                branch: branch
+            });
             branchExists = true;
         }
         catch (error) {
@@ -8397,7 +8403,12 @@ function createBranch(github, context, branch) {
             if (error.name == 'HttpError' && error.status == 404) {
                 console.log('여기까지 온것인가?(1)');
                 try {
-                    yield toolkit.git.createRef(Object.assign({ ref: `refs/heads/${branch}`, sha: context.sha }, context.repo));
+                    yield toolkit.git.createRef({
+                        owner: 'actions',
+                        ref: `refs/heads/${branch}`,
+                        sha: sha,
+                        repo: repo
+                    });
                 }
                 catch (error) {
                     console.log('Throw error2');
